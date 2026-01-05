@@ -27,6 +27,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# my_variables
+MY_COMPANY_NAME = 'ООО "Бегунчики"'
+MY_COMPANY_SLOGAN = 'Бегать - это прикольно'
+MY_COMPANY_ADDRESS = 'г. Выдропужск, Красный тупик, д.13'
 
 # Application definition
 
