@@ -24,5 +24,5 @@ from app_run.views import company_details_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/company_details', company_details_view)
+    path('api/company_details/', company_details_view)
 ]
