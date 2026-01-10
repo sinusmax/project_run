@@ -32,6 +32,7 @@ class RunViewSet(viewsets.ModelViewSet):
     Данные берем из БД.
     Забег добавляется POST-запросом с указанием коммента и id-атлета
     (запрос в данном случае идет на /api/runs)
+    В задании №4 во вложенном сериализаторе добавлен вывод поля "athlete_data"
     """
     queryset = Run.objects.all()
     serializer_class = RunSerializer
