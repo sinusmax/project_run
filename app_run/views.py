@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import viewsets
 from rest_framework.decorators import api_view # чтобы использовать декоратор
+from rest_framework.filters import SearchFilter
 from rest_framework.response import Response # чтобы использовать Response от DRF
 from django.conf import settings # чтобы использовать переменные из settings
 
@@ -48,6 +49,11 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = User.objects.filter(is_superuser = False) # сразу исключаем суперадминов
     serializer_class = UserSerializer
+
+    # Задание №5. Добавляем поиск по имени и фамилии
+    # /api/users/?search=Иван
+    filter_backends = [SearchFilter]
+    search_fields = ['first_name', 'last_name']
 
     def get_queryset(self):
         qs = self.queryset # наверное, можно и не вводить лишнюю переменную qs, а использовать прям queryset
