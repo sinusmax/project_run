@@ -34,7 +34,7 @@ class RunViewSet(viewsets.ModelViewSet):
     (запрос в данном случае идет на /api/runs)
     В задании №4 во вложенном сериализаторе добавлен вывод поля "athlete_data"
     """
-    queryset = Run.objects.all()
+    queryset = Run.objects.all().select_related('athlete')
     serializer_class = RunSerializer
 
 
