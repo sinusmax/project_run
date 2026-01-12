@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
+    'django_filters', # в pip, неожиданно, имя библиотеки django-filter (без s)
 
     'app_run',
 ]
