@@ -69,7 +69,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
 # Задача №6. Меняем статус с помощью вьюхи на базе APIView
 class StartRunAPIView(APIView):
-    def get(self,request, run_id):
+    def post(self,request, run_id): # Вначале делал GET, но проверка ругается, что надо POST
         # run = Run.objects.get(id=run_id)
         run = get_object_or_404(Run, id=run_id)
         if run.status != 'init':
@@ -80,7 +80,7 @@ class StartRunAPIView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class StopRunAPIView(APIView):
-    def get(self,request, run_id):
+    def post(self,request, run_id): # Вначале делал GET, но проверка ругается, что надо POST
         run = get_object_or_404(Run, id=run_id)
         if run.status != 'in_progress':
             return Response({'message': 'Забег еще не начат или уже закончен'}, status=status.HTTP_400_BAD_REQUEST)
