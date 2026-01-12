@@ -22,15 +22,32 @@ class RunSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    type = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField() # задаем вычисляемое полк
+
+    # добавим еще одно вычисляемое поле для вывода кол-ва завершенных забегов атлета
+    runs_finished = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ['id', 'date_joined', 'username', 'last_name', 'first_name', 'type']
+        fields = [
+            'id',
+            'date_joined',
+            'username',
+            'last_name',
+            'first_name',
+            'type', # этого поля изначально нет в модели, оно выше определено как вычисляемое
+            'runs_finished', # еще одно вычисляемое поле
+        ]
 
-    def get_type(self, obj):
+    def get_type(self, obj): # а это метод, который вычисляет значение поля 'type'
         if obj.is_staff or obj.is_superuser:
             return 'coach'
         else:
             return 'athlete'
 
+    def get_runs_finished(self, obj): # метод для вычисления runs_finished
+        # получается, в obj мы получим объект конкретного юзера
+        # потом вытащим queryset со всеми завершенными забегами
+        qs_runs = obj.run_set.filter(status = 'finished')
+        # и вернем их количество
+        return qs_runs.count()
