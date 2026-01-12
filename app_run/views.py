@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view # чтобы использовать декоратор
 from rest_framework.filters import SearchFilter
@@ -36,10 +37,16 @@ class RunViewSet(viewsets.ModelViewSet):
     Забег добавляется POST-запросом с указанием коммента и id-атлета
     (запрос в данном случае идет на /api/runs)
     В задании №4 во вложенном сериализаторе добавлен вывод поля "athlete_data"
+    В задании №7 добавляем фильтрацию, сортировку и пагинацию
     """
     queryset = Run.objects.all().select_related('athlete')
     serializer_class = RunSerializer
 
+    # класс для фильтрации - DjangoFilterBackend (должен быть импортирован)
+    # filter_backends - это атрибут класса ModelViewSet
+    filter_backends = [DjangoFilterBackend]
+    # Поля, по которым будет происходить фильтрация
+    filterset_fields = ['status', 'athlete']
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """
