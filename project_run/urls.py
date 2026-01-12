@@ -21,7 +21,7 @@ from django.conf.urls.static import static
 from django.conf import settings
 from rest_framework.routers import DefaultRouter
 
-from app_run.views import company_details_view, RunViewSet, UserViewSet
+from app_run.views import company_details_view, RunViewSet, UserViewSet, StartRunAPIView, StopRunAPIView
 
 router = DefaultRouter()
 router.register('api/runs', RunViewSet)
@@ -31,5 +31,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/company_details/', company_details_view),
     path('', include(router.urls)),
+
+    # добавляем маршруты для задачи №6
+    path('api/runs/<int:run_id>/start/', StartRunAPIView.as_view()),
+    path('api/runs/<int:run_id>/stop/', StopRunAPIView.as_view()),
+
 ] + debug_toolbar_urls()
 

@@ -1,9 +1,11 @@
 from django.contrib.auth.models import User
-from rest_framework import viewsets
+from django.shortcuts import get_object_or_404
+from rest_framework import viewsets, status
 from rest_framework.decorators import api_view # чтобы использовать декоратор
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response # чтобы использовать Response от DRF
 from django.conf import settings # чтобы использовать переменные из settings
+from rest_framework.views import APIView
 
 from app_run.models import Run
 from app_run.serializers import RunSerializer, UserSerializer
@@ -64,3 +66,25 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
             qs = qs.filter(is_staff = False)
         return qs
 
+
+# Задача №6. Меняем статус с помощью вьюхи на базе APIView
+class StartRunAPIView(APIView):
+    def get(self,request, run_id):
+        # run = Run.objects.get(id=run_id)
+        run = get_object_or_404(Run, id=run_id)
+        if run.status != 'init':
+            return Response({'message': 'Забег уже идет или закончен'}, status=status.HTTP_400_BAD_REQUEST)
+        run.status = 'in_progress'
+        run.save()
+        serializer = RunSerializer(run)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class StopRunAPIView(APIView):
+    def get(self,request, run_id):
+        run = get_object_or_404(Run, id=run_id)
+        if run.status != 'in_progress':
+            return Response({'message': 'Забег еще не начат или уже закончен'}, status=status.HTTP_400_BAD_REQUEST)
+        run.status = 'finished'
+        run.save()
+        serializer = RunSerializer(run)
+        return Response(serializer.data, status=status.HTTP_200_OK)
