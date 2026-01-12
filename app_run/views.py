@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view # чтобы использовать декоратор
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response # чтобы использовать Response от DRF
 from django.conf import settings # чтобы использовать переменные из settings
 from rest_framework.views import APIView
@@ -43,10 +43,13 @@ class RunViewSet(viewsets.ModelViewSet):
     serializer_class = RunSerializer
 
     # класс для фильтрации - DjangoFilterBackend (должен быть импортирован)
+    # класс для сортировки - DjangoFilterBackend (должен быть импортирован)
     # filter_backends - это атрибут класса ModelViewSet
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
     # Поля, по которым будет происходить фильтрация
     filterset_fields = ['status', 'athlete']
+    # Поля, по которым будет происходить сортировка (/api/runs/?ordering=created_at. Или -created_at)
+    ordering_fields = ['created_at']
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -55,13 +58,14 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     Суперадмина не отдаем никогда.
     Фильтр передается в GET-запросе в параметре ?type=coach|athlete
     (запрос в данном случае идет на /api/users)
+    В задании №7 добавляем сортировку и пагинацию
     """
     queryset = User.objects.filter(is_superuser = False) # сразу исключаем суперадминов
     serializer_class = UserSerializer
 
     # Задание №5. Добавляем поиск по имени и фамилии
     # /api/users/?search=Иван
-    filter_backends = [SearchFilter]
+    filter_backends = [SearchFilter, OrderingFilter] #сюда добавил фильтр для сортировки
     search_fields = ['first_name', 'last_name']
 
     def get_queryset(self):
@@ -73,6 +77,8 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
             qs = qs.filter(is_staff = False)
         return qs
 
+    # добавляем сортировку по полю date_joined (/api/users/?ordering=data_joined. Или -data_joined)
+    ordering_fields = ['date_joined']
 
 # Задача №6. Меняем статус с помощью вьюхи на базе APIView
 class StartRunAPIView(APIView):
