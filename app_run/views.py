@@ -4,6 +4,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view # чтобы использовать декоратор
 from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response # чтобы использовать Response от DRF
 from django.conf import settings # чтобы использовать переменные из settings
 from rest_framework.views import APIView
@@ -11,6 +12,12 @@ from rest_framework.views import APIView
 from app_run.models import Run
 from app_run.serializers import RunSerializer, UserSerializer
 
+
+# Задача №7. Создаем класс для пагинации
+class RunAndUserPagination(PageNumberPagination):
+    # page_size = 10 # Количество объектов на странице по умолчанию (не обязательный параметр)
+    page_size_query_param = 'size' # Разрешаем изменять количество объектов через query параметр size в url
+    # max_page_size = 100 # Ограничиваем максимальное количество объектов на странице
 
 # Create your views here.
 @api_view(['GET'])
@@ -51,6 +58,9 @@ class RunViewSet(viewsets.ModelViewSet):
     # Поля, по которым будет происходить сортировка (/api/runs/?ordering=created_at. Или -created_at)
     ordering_fields = ['created_at']
 
+    # устанавливаем класс пагинации
+    pagination_class = RunAndUserPagination
+
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Задание №3.
@@ -79,6 +89,10 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
     # добавляем сортировку по полю date_joined (/api/users/?ordering=data_joined. Или -data_joined)
     ordering_fields = ['date_joined']
+
+    # устанавливаем класс пагинации
+    pagination_class = RunAndUserPagination
+
 
 # Задача №6. Меняем статус с помощью вьюхи на базе APIView
 class StartRunAPIView(APIView):
