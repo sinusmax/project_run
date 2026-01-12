@@ -13,4 +13,4 @@ class Run(models.Model):
         'in_progress': 'Забег начат',
         'finished': 'Забег закончен',
     }
-    status = models.CharField(choices=STATUS_CHOICES, max_length=50, default='unknown')
+    status = models.CharField(choices=STATUS_CHOICES, max_length=50, default='init')
