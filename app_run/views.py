@@ -9,8 +9,8 @@ from rest_framework.response import Response # чтобы использоват
 from django.conf import settings # чтобы использовать переменные из settings
 from rest_framework.views import APIView
 
-from app_run.models import Run
-from app_run.serializers import RunSerializer, UserSerializer
+from app_run.models import Run, AthleteInfo
+from app_run.serializers import RunSerializer, UserSerializer, AthleteInfoSerializer
 
 
 # Задача №7. Создаем класс для пагинации
@@ -115,3 +115,35 @@ class StopRunAPIView(APIView):
         run.save()
         serializer = RunSerializer(run)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+# Задача №9. Вьюха для отдачи инфы из AthleteInfo (на базе APIView)
+class AthleteInfoAPIView(APIView):
+
+    def get(self,request,user_id):
+        # есть ли вообще юзер с таким id в модели User ?
+        user = get_object_or_404(User, id=user_id)
+
+        athlete_info, created = AthleteInfo.objects.get_or_create(user_id=user)
+        serializer = AthleteInfoSerializer(athlete_info)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        # на случай, если надо отдавать разные статусы отдавались
+        # if created:
+        #     return Response(serializer.data, status=status.HTTP_201_CREATED)
+        # else:
+        #     return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def put(self,request,user_id):
+        user = get_object_or_404(User, id=user_id)
+        if request.data['weight'] >= 900 or request.data['weight'] < 1:
+            return Response({'message': 'С таким весом бегать нельзя'}, status=status.HTTP_400_BAD_REQUEST)
+        athlete_info, created = AthleteInfo.objects.update_or_create(
+            user_id=user,
+            defaults={
+                'goals': request.data['goals'],
+                'weight': request.data['weight'],
+            }
+        )
+        serializer = AthleteInfoSerializer(athlete_info)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

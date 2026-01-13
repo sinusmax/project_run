@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Run
+from .models import Run, AthleteInfo
 
 
 # Задача №4. Создаем сериалайзер, который будем вкладывать в RunSerializer
@@ -51,3 +51,10 @@ class UserSerializer(serializers.ModelSerializer):
         qs_runs = obj.run_set.filter(status = 'finished')
         # и вернем их количество
         return qs_runs.count()
+
+
+# Задача №9. Создаем сериалайзер для модели AthleteInfo
+class AthleteInfoSerializer(serializers.ModelSerializer): # это будет вложенный сериалайзер для Run
+    class Meta:
+        model = AthleteInfo
+        fields = ['goals', 'weight', 'user_id']
