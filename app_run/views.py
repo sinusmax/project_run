@@ -136,8 +136,11 @@ class AthleteInfoAPIView(APIView):
 
     def put(self,request,user_id):
         user = get_object_or_404(User, id=user_id)
-        if request.data['weight'] >= 900 or request.data['weight'] < 1:
-            return Response({'message': 'С таким весом бегать нельзя'}, status=status.HTTP_400_BAD_REQUEST)
+        weight_is_not_valid = not request.data['weight'].isdigit() \
+                          or int(request.data['weight']) >= 900 \
+                          or int(request.data['weight']) < 1
+        if weight_is_not_valid:
+            return Response({'message': 'Указан недопустимый вес'}, status=status.HTTP_400_BAD_REQUEST)
         athlete_info, created = AthleteInfo.objects.update_or_create(
             user_id=user,
             defaults={
