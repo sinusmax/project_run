@@ -120,7 +120,7 @@ class StopRunAPIView(APIView):
         if finished_runs_count == 10:
             # и создаем запись в модели Challenge
             Challenge.objects.get_or_create( # get_or_create??? Разве просто create может приводить к "лишним" челленджам?
-                full_name=f'Сделай {finished_runs_count} забегов!',
+                full_name=f'Сделай 10 забегов!',
                 athlete=run.athlete
             )
             # print(f'Бинго! Челлендж завершен! ({finished_runs_count}-й забег)')
