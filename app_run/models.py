@@ -23,4 +23,9 @@ class AthleteInfo(models.Model):
     user_id = models.OneToOneField(User, on_delete=models.CASCADE)
 
 
+# для задачи №10 создаем модель Challenge
+class Challenge(models.Model):
+    full_name = models.CharField(max_length=100) # это будет название челленджа
+    athlete = models.ForeignKey(User, on_delete=models.CASCADE)
+
 

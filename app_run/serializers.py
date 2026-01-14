@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Run, AthleteInfo
+from .models import Run, AthleteInfo, Challenge
 
 
 # Задача №4. Создаем сериалайзер, который будем вкладывать в RunSerializer
@@ -54,7 +54,14 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 # Задача №9. Создаем сериалайзер для модели AthleteInfo
-class AthleteInfoSerializer(serializers.ModelSerializer): # это будет вложенный сериалайзер для Run
+class AthleteInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = AthleteInfo
         fields = ['goals', 'weight', 'user_id']
+
+
+# Задача №10. Создаем сериалайзер для модели Challenge
+class ChallengeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Challenge
+        fields = ['full_name', 'athlete']

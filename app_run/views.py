@@ -9,8 +9,8 @@ from rest_framework.response import Response # чтобы использоват
 from django.conf import settings # чтобы использовать переменные из settings
 from rest_framework.views import APIView
 
-from app_run.models import Run, AthleteInfo
-from app_run.serializers import RunSerializer, UserSerializer, AthleteInfoSerializer
+from app_run.models import Run, AthleteInfo, Challenge
+from app_run.serializers import RunSerializer, UserSerializer, AthleteInfoSerializer, ChallengeSerializer
 
 
 # Задача №7. Создаем класс для пагинации
@@ -113,6 +113,15 @@ class StopRunAPIView(APIView):
             return Response({'message': 'Забег еще не начат или уже закончен'}, status=status.HTTP_400_BAD_REQUEST)
         run.status = 'finished'
         run.save()
+
+        # Задача №10. Считаем кол-во завершенных забегов для челленджа
+        finished_runs_count = Run.objects.filter(athlete=run.athlete, status='finished').count()
+        # print(f'Это был {finished_runs_count}-й забег')
+        if finished_runs_count == 10:
+            # и создаем запись в модели Challenge
+            Challenge.objects.create(full_name=f'Сделай {finished_runs_count} забегов', athlete=run.athlete)
+            # print(f'Бинго! Челлендж завершен! ({finished_runs_count}-й забег)')
+
         serializer = RunSerializer(run)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -150,3 +159,19 @@ class AthleteInfoAPIView(APIView):
         )
         serializer = AthleteInfoSerializer(athlete_info)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+# Задача №10. Вьюха для возврата данных из модели Challenge. Пробуем через APIView
+class ChallengeAPIView(APIView):
+
+    def get(self,request):
+        athlete = self.request.query_params.get('athlete', None) # чтобы можно было отдать по конкретному атлету
+        challenges = Challenge.objects.all()
+
+        if athlete:
+            challenges = challenges.filter(athlete=athlete)
+
+        serializer = ChallengeSerializer(challenges, many=True) # many=True!!! Без этого была ошибка!
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
