@@ -29,3 +29,10 @@ class Challenge(models.Model):
     athlete = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
+# для задачи №11 создаем модель Position
+class Position(models.Model):
+    latitude = models.DecimalField(max_digits=6, decimal_places=4) # широта (от -90.0 до +90.0 градусов вкл.)
+    longitude = models.DecimalField(max_digits=7, decimal_places=4) # долгота (от -180.0 до +180.0 градусов вкл.)
+    created_at = models.DateTimeField(auto_now_add=True) # кажется, что это тоже должно пригодиться
+    run = models.ForeignKey(Run, on_delete=models.CASCADE)
+
