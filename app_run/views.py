@@ -9,8 +9,9 @@ from rest_framework.response import Response # чтобы использоват
 from django.conf import settings # чтобы использовать переменные из settings
 from rest_framework.views import APIView
 
-from app_run.models import Run, AthleteInfo, Challenge
-from app_run.serializers import RunSerializer, UserSerializer, AthleteInfoSerializer, ChallengeSerializer
+from app_run.models import Run, AthleteInfo, Challenge, Position
+from app_run.serializers import RunSerializer, UserSerializer, AthleteInfoSerializer, ChallengeSerializer, \
+    PositionSerializer
 
 
 # Задача №7. Создаем класс для пагинации
@@ -177,4 +178,12 @@ class ChallengeAPIView(APIView):
         serializer = ChallengeSerializer(challenges, many=True) # many=True!!! Без этого была ошибка!
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
+# Задача №11. Вьюха для работы с моделью Position. Через ModelViewSet
+class PositionViewSet(viewsets.ModelViewSet):
+    queryset = Position.objects.all()
+    serializer_class = PositionSerializer
+
+    # def get_queryset(self):
+    #     pass
 
