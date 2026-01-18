@@ -71,7 +71,7 @@ class ChallengeSerializer(serializers.ModelSerializer):
 class PositionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Position
-        fields = ['run', 'latitude', 'longitude']
+        fields = ['id', 'run', 'latitude', 'longitude']
 
     def validate_latitude(self, value): # валидация поля (validate_<имя поля>)
         if value >= 90 or value <= -90:
