@@ -184,6 +184,10 @@ class PositionViewSet(viewsets.ModelViewSet):
     queryset = Position.objects.all()
     serializer_class = PositionSerializer
 
-    # def get_queryset(self):
-    #     pass
+    def get_queryset(self):
+        qs = self.queryset  # Используем базовый queryset определенный выше, на уровне класса
+        run = self.request.query_params.get('run', None)  # Получим параметр run
+        if run:
+            qs = qs.filter(run=run)  # Фильтруем по атлету, если параметр указан
+        return qs
 

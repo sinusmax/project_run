@@ -71,7 +71,7 @@ class ChallengeSerializer(serializers.ModelSerializer):
 class PositionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Position
-        fields = ['pk', 'run', 'latitude', 'longitude']
+        fields = ['run', 'latitude', 'longitude']
 
     def validate_latitude(self, value): # валидация поля (validate_<имя поля>)
         if value >= 90 or value <= -90:
@@ -85,8 +85,8 @@ class PositionSerializer(serializers.ModelSerializer):
 
     def validate(self, data): # вызывается автоматом после валидации всех отдельных полей
         # попробуем прям здесь валидировать статус забега
-        status_run = Run.objects.filter(pk = data['run']).first()
-        if status_run != 'in progress':
+        status_run = data.get('run').status
+        if status_run != 'in_progress':
             raise serializers.ValidationError('Забег должен быть в статусе "in progress"')
         return data
 
