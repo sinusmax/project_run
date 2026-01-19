@@ -15,6 +15,9 @@ class Run(models.Model):
     }
     status = models.CharField(choices=STATUS_CHOICES, max_length=50, default='init')
 
+    # Задача №12. Добавляем в модель поле 'distance'
+    distance = models.FloatField(blank=True, null=True)
+
 
 # для задачи №9 создаем модель AthleteInfo (OneToOne к User)
 class AthleteInfo(models.Model):
