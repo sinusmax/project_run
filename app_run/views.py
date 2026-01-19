@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from haversine import haversine
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view # чтобы использовать декоратор
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -112,6 +113,26 @@ class StopRunAPIView(APIView):
         run = get_object_or_404(Run, id=run_id)
         if run.status != 'in_progress':
             return Response({'message': 'Забег еще не начат или уже закончен'}, status=status.HTTP_400_BAD_REQUEST)
+        # ----------
+        # Задача №12. Видимо, в этот момент надо посчитать суммарное расстояние и записать в distance
+
+        # получим позиции по конкретному забегу
+        positions = Position.objects.filter(run_id=run_id)
+
+        spis = []
+        # Видимо, надо запихнуть все позиции в список... Другого варианта пока не придумал
+        for i in positions:
+            spis.append((float(i.latitude), float(i.longitude)))
+        # print(spis)
+
+        # а потом пройтись по списку и посчитать суммарное расстояние
+        total_distance = sum(haversine(spis[i], spis[i+1]) for i in range(len(spis) - 1))
+        # print(total_distance)
+
+        # ...и записать результат в поле distance в run
+        run.distance = total_distance
+        # ----------
+
         run.status = 'finished'
         run.save()
 
