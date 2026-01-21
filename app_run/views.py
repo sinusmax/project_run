@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from haversine import haversine
@@ -141,6 +142,22 @@ class StopRunAPIView(APIView):
                 athlete=run.athlete
             )
             # print(f'Бинго! Челлендж завершен! ({finished_runs_count}-й забег)')
+
+        # ----------
+        # Задача №13. Считаем суммарное расстояние завершенных забегов для челленджа "Пробеги 50 километров!"
+        # Теперь с использованием агрегатной функции Sum (на уровне БД)
+        finished_runs_distance = Run.objects.filter(athlete=run.athlete, status='finished').aggregate(Sum('distance'))
+        # Кстати, получается, что мы здесь 2-й раз обращаемся в БД с тем же запросом, что и в задаче №10.
+        # Возможно, оптимальнее будет 1 раз получить qs, а потом уже вынимать из него нужное.
+        # Надо будет это проверить
+
+        if finished_runs_distance['distance__sum'] >= 50:
+            # а вот здесь похоже, надо именно get_or_create
+            Challenge.objects.get_or_create(
+                full_name='Пробеги 50 километров!',
+                athlete=run.athlete
+            )
+        # ----------
 
         serializer = RunSerializer(run)
         return Response(serializer.data, status=status.HTTP_200_OK)
