@@ -116,20 +116,15 @@ class StopRunAPIView(APIView):
         # ----------
         # Задача №12. Видимо, в этот момент надо посчитать суммарное расстояние и записать в distance
 
-        # получим позиции по конкретному забегу
-        positions = Position.objects.filter(run_id=run_id)
+        # Отличный метод values_list!. Сразу получаем из QuerySet-а список кортежей с нужными полями
+        positions_list = Position.objects.filter(run_id=run_id).values_list('latitude', 'longitude')
 
-        spis = []
-        # Видимо, надо запихнуть все позиции в список... Другого варианта пока не придумал
-        for i in positions:
-            spis.append((float(i.latitude), float(i.longitude)))
-        # print(spis)
-
-        # а потом пройтись по списку и посчитать суммарное расстояние
-        total_distance = sum(haversine(spis[i], spis[i+1]) for i in range(len(spis) - 1))
+        # а потом проходимся по этому списку и считаем суммарное расстояние
+        # в данном случае используем генератор, но можно и list_comprehension (конструкция sum[])
+        total_distance = sum(haversine(positions_list[i], positions_list[i+1]) for i in range(len(positions_list) - 1))
         # print(total_distance)
 
-        # ...и записать результат в поле distance в run
+        # ...и записываем результат в поле distance в run
         run.distance = total_distance
         # ----------
 
