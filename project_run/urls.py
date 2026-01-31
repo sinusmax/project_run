@@ -23,7 +23,7 @@ from rest_framework.routers import DefaultRouter
 
 from app_run.models import AthleteInfo, Position
 from app_run.views import company_details_view, RunViewSet, UserViewSet, StartRunAPIView, StopRunAPIView, \
-    AthleteInfoAPIView, ChallengeAPIView, PositionViewSet
+    AthleteInfoAPIView, ChallengeAPIView, PositionViewSet, upload_file_view
 
 router = DefaultRouter()
 router.register('api/runs', RunViewSet)
@@ -44,6 +44,9 @@ urlpatterns = [
 
     # добавляем маршрут для задачи №10
     path('api/challenges/', ChallengeAPIView.as_view()),
+
+    # добавляем маршруты для задачи №14
+    path('api/upload_file/', upload_file_view),
 
 ] + debug_toolbar_urls()
 

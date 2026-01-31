@@ -3,6 +3,7 @@ from django.db.models import Sum
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from haversine import haversine
+from openpyxl import load_workbook
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view # чтобы использовать декоратор
 from rest_framework.filters import SearchFilter, OrderingFilter
@@ -13,7 +14,7 @@ from rest_framework.views import APIView
 
 from app_run.models import Run, AthleteInfo, Challenge, Position
 from app_run.serializers import RunSerializer, UserSerializer, AthleteInfoSerializer, ChallengeSerializer, \
-    PositionSerializer
+    PositionSerializer, CollectibleItemSerializer
 
 
 # Задача №7. Создаем класс для пагинации
@@ -224,3 +225,33 @@ class PositionViewSet(viewsets.ModelViewSet):
             qs = qs.filter(run=run)  # Фильтруем по атлету, если параметр указан
         return qs
 
+
+# Задача №14. Вью за загрузки файла (/api/upload_file/)
+@api_view(['POST'])
+def upload_file_view(request):
+    file = request.FILES.get('file') # получается, прочитали файл в байтах
+    wb = load_workbook(file) # а теперь это объект рабочей книги excel
+    ws = wb.active # получили активный лист
+
+    all_rows_raw = ws.iter_rows(values_only=True)  # это, получается, генератор строк
+    first_row = next(all_rows_raw)  # получили кортеж заголовков
+    # (и, заодно, дальше будем уже итерироваться со второй строки, без учета заголовков)
+
+    # делаем заголовки строчными буквами (чтобы как в модели)
+    first_row_lower = tuple(i.lower() for i in first_row)
+
+    # сделаем пустой список для невалидных строк
+    invalid_rows = []
+
+    # валидируем каждую строку сериалайзером
+    for row in all_rows_raw: # так должны получить кортеж значений ячеек каждой строки (заголовки уже не уситываются)
+        row_data = dict(zip(first_row_lower, row))  # и делаем словарик с заголовками
+        serializer = CollectibleItemSerializer(data=row_data)
+        if serializer.is_valid():
+            # пишем строку в БД
+            serializer.save()
+        else:
+            # добавляем эту строку в список "неправильных"
+            invalid_rows.append(row)
+
+    return Response(invalid_rows)
