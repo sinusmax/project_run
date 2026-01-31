@@ -12,7 +12,7 @@ from rest_framework.response import Response # чтобы использоват
 from django.conf import settings # чтобы использовать переменные из settings
 from rest_framework.views import APIView
 
-from app_run.models import Run, AthleteInfo, Challenge, Position
+from app_run.models import Run, AthleteInfo, Challenge, Position, CollectibleItem
 from app_run.serializers import RunSerializer, UserSerializer, AthleteInfoSerializer, ChallengeSerializer, \
     PositionSerializer, CollectibleItemSerializer
 
@@ -255,3 +255,11 @@ def upload_file_view(request):
             invalid_rows.append(row)
 
     return Response(invalid_rows)
+
+
+# Задача №14. Вьюха для возврата CollectibleItem из БД
+class CollectibleItemsAPIView(APIView):
+    def get(self,request):
+        collectible_items = CollectibleItem.objects.all()
+        serializer = CollectibleItemSerializer(collectible_items, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
