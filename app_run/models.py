@@ -39,3 +39,12 @@ class Position(models.Model):
     created_at = models.DateTimeField(auto_now_add=True) # кажется, что это тоже должно пригодиться
     run = models.ForeignKey(Run, on_delete=models.CASCADE)
 
+
+# для задачи №14 создаем модель коллекционых предметов
+class CollectibleItem(models.Model):
+    name = models.CharField(max_length=100)
+    uid = models.CharField(max_length=40)
+    latitude = models.DecimalField(max_digits=6, decimal_places=4)
+    longitude = models.DecimalField(max_digits=7, decimal_places=4)
+    picture = models.URLField()
+    value = models.IntegerField()
