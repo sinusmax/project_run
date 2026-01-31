@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Run, AthleteInfo, Challenge, Position
+from .models import Run, AthleteInfo, Challenge, Position, CollectibleItem
 
 
 # Задача №4. Создаем сериалайзер, который будем вкладывать в RunSerializer
@@ -90,3 +90,12 @@ class PositionSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Забег должен быть в статусе "in progress"')
         return data
 
+
+# Задача №14. Создаем сериалайзер для модели CollectibleItem
+class CollectibleItemSerializer(serializers.ModelSerializer):
+
+    url = serializers.URLField(source='picture') # чтобы апи принял url, а в модель записалось picture
+
+    class Meta:
+        model = CollectibleItem
+        fields = ['name', 'uid', 'value', 'latitude', 'longitude', 'url']
