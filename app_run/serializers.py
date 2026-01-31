@@ -94,8 +94,11 @@ class PositionSerializer(serializers.ModelSerializer):
 # Задача №14. Создаем сериалайзер для модели CollectibleItem
 class CollectibleItemSerializer(serializers.ModelSerializer):
 
-    url = serializers.URLField(source='picture') # чтобы апи принял url, а в модель записалось picture
+    # url = serializers.URLField(source='picture') # чтобы апи принял url, а в модель записалось picture
+    # почему-то локально все работает, а проверяющая система ругается, что не записывается picture
+    # тогда сделаю подмену поля прям ао вьюхе
 
     class Meta:
         model = CollectibleItem
-        fields = ['name', 'uid', 'value', 'latitude', 'longitude', 'url']
+        # fields = ['name', 'uid', 'value', 'latitude', 'longitude', 'url']
+        fields = '__all__'

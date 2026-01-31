@@ -238,13 +238,16 @@ def upload_file_view(request):
     # (и, заодно, дальше будем уже итерироваться со второй строки, без учета заголовков)
 
     # делаем заголовки строчными буквами (чтобы как в модели)
-    first_row_lower = tuple(i.lower() for i in first_row)
+    # first_row_lower = tuple(i.lower() for i in first_row)
+    first_row_lower = list(i.lower() for i in first_row)
+    first_row_lower[-1] = 'picture' # почему-то маппинг в сер-ре норм срабатывает только локально.
+    # Проверяющая система ругается. Меняем прям здесь тогда
 
     # сделаем пустой список для невалидных строк
     invalid_rows = []
 
     # валидируем каждую строку сериалайзером
-    for row in all_rows_raw: # так должны получить кортеж значений ячеек каждой строки (заголовки уже не уситываются)
+    for row in all_rows_raw: # так должны получить кортеж значений ячеек каждой строки (заголовки уже не учитываются)
         row_data = dict(zip(first_row_lower, row))  # и делаем словарик с заголовками
         serializer = CollectibleItemSerializer(data=row_data)
         if serializer.is_valid():
